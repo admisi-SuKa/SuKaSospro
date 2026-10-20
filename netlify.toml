@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+[build.environment]
+  NODE_VERSION = "22"
+
+[[headers]]
+  for = "/api/office/*"
+  [headers.values]
+    Cache-Control = "no-store"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/admin/layanan/*"
+  [headers.values]
+    Cache-Control = "no-store"

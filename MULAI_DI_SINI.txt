@@ -1,0 +1,38 @@
+SOSPRO UIN SUNAN KALIJAGA — FULL STACK + BAHAN SOSPRO
+
+1) Baca: SETUP_ADMINISTRASI.md
+2) Siapkan Spreadsheet ID + Folder Drive ID (TIDAK HARUS DIISI SEKARANG).
+3) Buka apps-script-administrasi/Code.gs dan salin ke project Apps Script baru.
+4) Apps Script > Project Settings > Script Properties:
+      SHEET_ID          = <Spreadsheet ID Anda>
+      DRIVE_FOLDER_ID   = <Folder Drive ID Anda>
+      API_SECRET        = <Secret acak panjang>
+5) Jalankan setupAdministrasi(), lalu Deploy Web App. Simpan URL /exec.
+6) Buat akun petugas:
+      node scripts/create-office-user.mjs adminadmisi admin "Admin Admisi"
+      node scripts/create-office-user.mjs kepalaadmisi pejabat "Pejabat Penandatangan"
+7) Isi environment Netlify dari .env.example (jangan commit rahasia).
+8) Deploy source melalui GitHub -> Netlify.
+9) Akses menu Bahan Sospro:
+      Publik: /layanan/bahan
+      Admin:  /admin/layanan/bahan
+10) Tes sebelum dipakai untuk surat resmi.
+
+KENALI BATASNYA:
+- ZIP sudah berisi kode frontend, API server dan backend Apps Script, tetapi
+  baru dapat terhubung setelah ID Spreadsheet/Drive, URL GAS dan credential diisi.
+- Surat resmi yang disetujui memakai UNGGAH PDF final yang telah ditandatangani
+  di luar aplikasi. Integrasi tanda tangan digital tersertifikasi BELUM disediakan.
+- Batas file: surat PDF 2 MB, bahan sospro 3 MB per file.
+- Modul lama kegiatan, presensi, doorprize masih disertakan.
+- Build npm belum dapat dicoba di lingkungan pembuatan karena npm registry tidak
+  dapat dijangkau. Pemeriksaan sintaks dan uji logic backend lokal sudah lulus.
+
+
+TAMBAHAN LANDING PAGE BARU:
+- Landing page (/): gaya editorial hijau-emas dengan hero slider, pencarian prodi, jenjang, katalog, layanan, kegiatan, bahan, galeri, Instagram.
+- Kelola dari /admin/layanan/landing setelah login Admin Admisi.
+- Apps Script administrasi perlu diperbarui menggunakan Code.gs terbaru; jalankan kembali setupAdministrasi() (tidak menghapus data lama).
+- Preview offline: buka PREVIEW_LANDING.html. Preview hanya contoh visual, bukan backend yang aktif.
+- Instagram tidak otomatis menampilkan feed tanpa persetujuan Meta/token akun profesional. Tanpa token tetap menampilkan tautan @admisi.uinsk.
+Lihat: SETUP_LANDING_IG.md.

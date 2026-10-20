@@ -1,0 +1,24 @@
+PATCH V8 — DAFTAR PESERTA DOORPRIZE TANPA STATUS
+
+Perubahan:
+1. Tabel "Daftar Peserta Presensi" tetap tampil di bawah Wheel Peserta Presensi.
+2. Kolom tabel sekarang hanya:
+   - No.
+   - Nama Peserta
+   - Sekolah / Instansi
+3. Kolom "Status Doorprize" dihapus sepenuhnya dari tampilan.
+4. Logika wheel tidak berubah: peserta yang sudah pernah menang tetap tidak masuk putaran berikutnya.
+5. Nomor HP tetap tidak ditampilkan untuk menjaga privasi peserta.
+
+FILE YANG DIREPLACE DI GITHUB:
+- components/DoorprizeWheel.tsx
+- components/DoorprizeWheel.module.css
+
+Tidak perlu mengubah:
+- Google Apps Script
+- Google Sheets
+- Environment Variables Vercel
+- Struktur database
+- app/admin/doorprize/page.tsx
+
+Setelah replace kedua file, Commit changes dan tunggu Vercel redeploy sampai Ready.
