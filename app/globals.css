@@ -736,3 +736,46 @@ body { font-family: "Plus Jakarta Sans", "Manrope", Arial, Helvetica, sans-serif
 
 /* When only three gallery images are supplied, fill the row without a gap. */
 @media(min-width:701px){.lp-gallery-grid:has(> .lp-gallery-item:nth-child(3):last-child){grid-template-rows:390px}.lp-gallery-grid:has(> .lp-gallery-item:nth-child(3):last-child) .lp-gallery-item{grid-row:auto;grid-column:auto;}}
+
+
+/* Akses login petugas — navbar dan halaman pemilihan login */
+.lp-site-header .nav .lp-login-btn {
+  display:inline-flex;align-items:center;gap:7px;
+  color:#075348;background:#edf6f0;border:1px solid #bad8cb;
+  border-radius:9px;padding:10px 12px;font-size:12px;font-weight:800;
+  white-space:nowrap;
+}
+.lp-site-header .nav .lp-login-btn:hover {background:#def0e7;color:#073f38;}
+.lp-mobile-panel>a.lp-mobile-login {
+  background:#edf7ef;color:#0b6b5b;border-radius:9px;padding:12px;
+  margin-top:7px;
+}
+.lp-mobile-login span {display:inline-flex;align-items:center;gap:9px;}
+.petugas-login-page {min-height:65vh;background:linear-gradient(145deg,#f0f7f2,#fff 70%);}
+.petugas-login-container {padding-block:70px 86px;max-width:940px;}
+.petugas-login-heading {max-width:610px;margin:0 auto 34px;text-align:center;}
+.petugas-login-heading .lp-eyebrow {display:inline-block;color:#0b6b5b;font-size:11px;font-weight:800;letter-spacing:.12em;}
+.petugas-login-heading h1 {color:#073f38;font-size:clamp(29px,4.5vw,43px);letter-spacing:-.045em;margin:10px 0;}
+.petugas-login-heading p {color:#5c7266;font-size:15px;line-height:1.8;margin:0;}
+.petugas-login-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;}
+.petugas-login-card {
+  display:flex;flex-direction:column;align-items:flex-start;min-height:294px;
+  padding:30px;border-radius:20px;background:#fff;
+  border:1px solid #d9e8de;box-shadow:0 12px 32px rgba(7,63,56,.055);
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.petugas-login-card:hover {transform:translateY(-3px);border-color:#74b49c;box-shadow:0 15px 35px rgba(7,63,56,.105);}
+.petugas-login-icon {height:51px;width:51px;display:grid;place-items:center;border-radius:14px;background:#e8f5ed;color:#0b6b5b;font-size:24px;}
+.petugas-login-subtitle {font-size:10px;letter-spacing:.14em;color:#13806b;font-weight:850;margin-top:25px;}
+.petugas-login-card h2 {font-size:23px;letter-spacing:-.035em;color:#073f38;margin:5px 0 8px;}
+.petugas-login-card p {color:#62756d;font-size:13px;line-height:1.75;margin:0 0 18px;}
+.petugas-login-cta {margin-top:auto;color:#0b6b5b;font-weight:800;display:flex;gap:9px;align-items:center;font-size:13px;}
+.petugas-login-footer {margin:25px auto 15px;text-align:center;color:#5d756a;font-size:12px;line-height:1.8;}
+.petugas-back {display:flex;align-items:center;justify-content:center;gap:8px;color:#0b6b5b;font-size:13px;font-weight:750;}
+@media(max-width:700px) {
+  .petugas-login-container {padding-block:48px 60px;}
+  .petugas-login-grid {grid-template-columns:1fr;gap:13px;}
+  .petugas-login-card {min-height:0;padding:24px;}
+  .petugas-login-heading {margin-bottom:25px;}
+  .petugas-login-subtitle {margin-top:17px;}
+}

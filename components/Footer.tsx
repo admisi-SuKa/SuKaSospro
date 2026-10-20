@@ -18,7 +18,6 @@ export default function Footer() {
             <div className="footer-links">
               <Link href="/program-studi">Program Studi</Link>
               <Link href="/jalur-masuk">Jalur Masuk</Link>
-              <Link href="/biaya-beasiswa">Biaya & Beasiswa</Link>
               <Link href="/kegiatan">Kegiatan Sospro</Link>
               <Link href="/layanan">Layanan Surat & Alat</Link>
               <Link href="/layanan/bahan">Bahan Sospro</Link>
@@ -35,7 +34,7 @@ export default function Footer() {
         </div>
         <div className="footer-bottom">
           <span>Materi sosialisasi — bukan kanal resmi universitas.</span>
-          <span><Link href="/admin/login">Admin Kegiatan</Link> · <Link href="/admin/layanan/login">Admin Layanan</Link></span>
+          <span><Link href="/login">Login Petugas</Link> · <Link href="/admin/login">Admin Kegiatan</Link> · <Link href="/admin/layanan/login">Admin Layanan</Link></span>
         </div>
       </div>
     </footer>
