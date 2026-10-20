@@ -1,0 +1,40 @@
+SOSPRO — PATCH HTTP 405 (REDIRECT GOOGLE APPS SCRIPT)
+
+Isi PATCH: lib/gas.ts saja + panduan ini.
+Patch dibuat dari versi ZIP terbaru Satu Apps Script, Tanpa Beasiswa + Login Petugas.
+
+CARA PASANG
+1. Ekstrak ZIP patch ini.
+2. Salin lib/gas.ts ke folder lib/gas.ts proyek website Sospro yang sudah ada.
+3. Timpa file lama (Replace/Overwrite).
+4. Commit/push perubahan ke GitHub.
+5. Netlify -> Deploys -> Trigger deploy / redeploy project.
+
+KONFIGURASI TETAP SAMA
+- Apps Script -> Project Settings -> Script Properties:
+  SHEET_ID = ID Spreadsheet
+  DRIVE_FOLDER_ID = ID folder Drive
+  API_SECRET = kode rahasia aplikasi
+- Netlify -> Environment variables:
+  GAS_ENDPOINT = https://script.google.com/macros/s/...../exec
+  GAS_SECRET = nilai yang PERSIS SAMA dengan API_SECRET
+
+Jangan mengubah API_SECRET menjadi GAS_SECRET di Apps Script.
+Tidak perlu menjalankan ulang setupSospro() atau mengubah Code.gs untuk patch ini.
+
+VERIFIKASI
+- Buka URL /exec langsung di browser. Semestinya tampil JSON
+  dengan pesan 'API Sospro Terpadu aktif'.
+- Deployment Apps Script: Deploy -> Manage deployments -> Web app,
+  Execute as Me dan Who has access Anyone.
+- Jika kode Apps Script baru saja diubah, pilih New version lalu Deploy.
+- Tes melihat daftar kegiatan, kemudian tes satu formulir (periksa Sheet
+  terlebih dulu sebelum mencoba lagi untuk menghindari duplikasi transaksi).
+
+Patch menangani pengalihan ContentService dengan membuka URL redirect
+menggunakan GET sehingga POST tidak terkirim lagi ke URL output sementara.
+Patch TIDAK melakukan retry otomatis terhadap request penulisan agar tidak
+menduplikasi data jika Apps Script sebenarnya sudah menyimpan request.
+
+Catatan: pengujian integrasi dengan Apps Script milik Anda tidak mungkin
+sebelum URL deployment diberikan/diuji di lingkungan Anda.
