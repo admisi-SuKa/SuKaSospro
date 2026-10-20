@@ -771,3 +771,9 @@ body { font-family: "Plus Jakarta Sans", "Manrope", Arial, Helvetica, sans-serif
   .lp-site-header .brand-logo {width:158px;max-height:46px;}
   .lp-header-inner {min-height:70px;}
 }
+
+/* Dashboard terpadu: navigasi admin tetap terbaca pada layar sempit. */
+@media (max-width: 760px) {
+  .admin-top .container { flex-direction: column; align-items: flex-start; }
+  .admin-nav { width: 100%; }
+}

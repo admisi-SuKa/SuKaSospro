@@ -32,7 +32,7 @@ export default function Footer() {
         </div>
         <div className="footer-bottom">
           <span>SosPro · Sosialisasi dan Promosi</span>
-          <span><Link href="/login">Login</Link> · <Link href="/admin/login">Admin Kegiatan</Link> · <Link href="/admin/layanan/login">Admin Layanan</Link></span>
+          <span><Link href="/login">Login</Link></span>
         </div>
       </div>
     </footer>

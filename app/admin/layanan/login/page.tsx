@@ -1,2 +1,3 @@
-import OfficeLogin from "@/components/office/OfficeLogin";
-export default function Page(){return <OfficeLogin/>}
+import { redirect } from "next/navigation";
+// Kompatibilitas tautan lama: hanya ada satu halaman login.
+export default function LegacyOfficeLogin() { redirect("/login"); }

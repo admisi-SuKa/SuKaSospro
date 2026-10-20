@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminRequest } from "@/lib/auth";
+import { getOfficeRequest, validOrigin } from "@/lib/office";
 import { callGas } from "@/lib/gas";
 
 export async function POST(req: NextRequest) {
-  if (!isAdminRequest(req)) {
+  if (!validOrigin(req)) return NextResponse.json({ ok: false, error: "Origin ditolak" }, { status: 403 });
+  if (!(getOfficeRequest(req)?.role === "admin")) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

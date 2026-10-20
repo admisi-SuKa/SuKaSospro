@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAdminRequest } from "@/lib/auth";
+import { getOfficeRequest, validOrigin } from "@/lib/office";
 import { callGas } from "@/lib/gas";
 
 // Allow enough time for Google Apps Script cold-start on the first request.
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
-  if (!isAdminRequest(req)) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!(getOfficeRequest(req)?.role === "admin")) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   const eventId = req.nextUrl.searchParams.get("eventId");
   if (!eventId) return NextResponse.json({ ok: false, error: "eventId wajib diisi." }, { status: 400 });
   if (!process.env.GAS_ENDPOINT && process.env.NEXT_PUBLIC_DEMO_MODE === "1") {
