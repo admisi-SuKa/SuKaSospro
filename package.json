@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test:admin": "node scripts/test-administrasi.mjs",
-    "test:landing": "node scripts/test-landing.mjs"
+    "test:landing": "node scripts/test-landing.mjs",
+    "test:terpadu": "node scripts/test-terpadu.mjs"
   },
   "dependencies": {
     "next": "15.5.24",

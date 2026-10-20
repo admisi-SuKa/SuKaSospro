@@ -1,29 +1,22 @@
-# Checklist Deployment Netlify — Full Stack Sospro
+# Checklist Netlify — SATU Google Apps Script Terpadu
 
-**Mulai dari `SETUP_ADMINISTRASI.md`** untuk pengaturan Google Apps Script, Google Sheets, Drive, akun pejabat, dan layanan Bahan Sospro.
+- [ ] Siapkan satu Spreadsheet kosong dan satu folder Drive privat.
+- [ ] Buat **satu** proyek Apps Script dari `apps-script/Code.gs`.
+- [ ] Set Script Properties `SHEET_ID`, `DRIVE_FOLDER_ID`.
+- [ ] Run `setupSospro()` hingga log menunjukkan setup berhasil.
+- [ ] Periksa semua **9 sheet** otomatis muncul dalam Spreadsheet yang sama.
+- [ ] Ambil `API_SECRET` dari Script Properties (dibuat otomatis bila kosong).
+- [ ] Deploy satu Web App; catat URL `/exec`.
+- [ ] Netlify: `GAS_ENDPOINT` dan `GAS_SECRET` diisi dari Web App yang sama.
+- [ ] Netlify: `ADMIN_PASSWORD`, `SESSION_SECRET`, `OFFICE_SESSION_SECRET`, dan `OFFICE_USERS_JSON` diisi.
+- [ ] Tidak perlu `OFFICE_GAS_ENDPOINT` atau `OFFICE_GAS_SECRET`.
+- [ ] Deploy Next.js ke Netlify (bukan static export), periksa konfigurasi env.
+- [ ] Uji daftar kegiatan, presensi, doorprize.
+- [ ] Uji surat, tanda tangan pemohon, kode pelacakan, PDF final yang sah.
+- [ ] Uji stok alat, peminjaman, serah terima/pengembalian.
+- [ ] Uji draft/publikasi Bahan Sospro, unduh dokumen.
+- [ ] Uji banner, galeri dan pengumuman `/admin/layanan/landing`.
+- [ ] Instagram feed otomatis perlu izin Meta dan token terpisah; tanpa token hanya tautan IG.
+- [ ] Sebelum rilis publik: rate limit, kontrol dokumen pribadi, backup, dan otorisasi surat resmi.
 
-- [ ] Repository di GitHub berisi Next.js dan `netlify.toml`.
-- [ ] Apps Script lama tetap deployed dan `GAS_ENDPOINT`, `GAS_SECRET`, `ADMIN_PASSWORD`, `SESSION_SECRET` terisi.
-- [ ] Apps Script baru `apps-script-administrasi/Code.gs` sudah di-deploy sebagai Web App.
-- [ ] Script Properties baru: `SHEET_ID`, `DRIVE_FOLDER_ID`, `API_SECRET`.
-- [ ] Jalankan `setupAdministrasi()`; terbuat 6 sheet (`PERMOHONAN`, `INVENTARIS`, `RIWAYAT_STATUS`, `BAHAN_SOSPRO`, `LANDING_PAGE`, `LANDING_ASSETS`).
-- [ ] Netlify env: `OFFICE_GAS_ENDPOINT`, `OFFICE_GAS_SECRET`, `OFFICE_SESSION_SECRET`, `OFFICE_USERS_JSON`, `PUBLIC_SITE_URL`.
-- [ ] Role admin dan pejabat menggunakan password berbeda.
-- [ ] Deploy Next.js di Netlify; tidak memakai static export.
-- [ ] Coba surat, tanda tangan pemohon, PDF, cek status dua kode.
-- [ ] Coba admin verifikasi dan pejabat unggah PDF final yang telah ditandatangani.
-- [ ] Coba inventaris, peminjaman dan pengembalian alat.
-- [ ] Coba Bahan Sospro: upload PDF/PPTX, publikasi/draft, edit, hapus, unduh.
-- [ ] Konfirmasi kegiatan, presensi dan doorprize versi lama masih normal.
-- [ ] Sebelum rilis resmi: kebijakan institusi untuk dokumen/TTE; aktifkan mitigasi spam/rate limiting.
-
-
-## Landing page baru
-- [ ] Buka beranda dan pastikan semua menu, program studi, kegiatan, bahan, dan layanan tersambung.
-- [ ] Buka `/admin/layanan/landing` dari dashboard Admin Admisi.
-- [ ] Unggah gambar banner JPG/PNG/WebP maksimal 1,5 MB, simpan pengaturan.
-- [ ] Jalankan ulang `setupAdministrasi()` untuk membuat 2 sheet landing baru tanpa menghapus data sebelumnya; deploy versi baru Apps Script.
-- [ ] Jika ingin feed Instagram otomatis: otorisasi akun profesional `@admisi.uinsk` pada Meta; isi env `INSTAGRAM_LOGIN_METHOD`, `INSTAGRAM_USER_ID`, `INSTAGRAM_ACCESS_TOKEN` di Netlify; lakukan redeploy. Jangan tulis token di Git.
-- [ ] Periksa gambar kampus default eksternal dan unggah foto institusi yang berizin untuk menghindari hotlink pihak ketiga.
-- [ ] Di Netlify: pastikan file server Next.js tidak dijadikan export static.
-- [ ] Jalankan `npm run test:landing` untuk pengujian Apps Script landing offline.
+Lihat langkah lengkap di `SETUP_APPS_SCRIPT_TERPADU.md`.

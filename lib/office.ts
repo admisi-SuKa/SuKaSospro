@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { callGas } from "./gas";
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
@@ -57,24 +58,9 @@ export function validOrigin(req: NextRequest): boolean {
   } catch { return false; }
 }
 
+// Modul layanan dan kegiatan menggunakan Web App yang sama dan satu secret.
 export async function callOffice<T>(action: string, payload: Record<string, unknown> = {}): Promise<T> {
-  const endpoint = (process.env.OFFICE_GAS_ENDPOINT || "").trim();
-  const secret = (process.env.OFFICE_GAS_SECRET || "").trim();
-  if (!endpoint || !secret) throw new Error("Konfigurasi OFFICE_GAS_ENDPOINT / OFFICE_GAS_SECRET belum diisi. Lihat SETUP_ADMINISTRASI.md.");
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 45000);
-  try {
-    const res = await fetch(endpoint, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({action,secret,...payload}), cache:"no-store",redirect:"follow",signal:ctrl.signal });
-    if (!res.ok) throw new Error(`Apps Script: HTTP ${res.status}`);
-    const raw = await res.text();
-    let json: {ok:boolean;data?:T;error?:string};
-    try { json = JSON.parse(raw); } catch { throw new Error("Apps Script tidak mengembalikan JSON. Periksa URL deploy /exec dan akses Web App."); }
-    if (!json.ok) throw new Error(json.error || "Permintaan ditolak Apps Script.");
-    return json.data as T;
-  } catch (e) {
-    if (e instanceof Error && e.name === "AbortError") throw new Error("Respons Apps Script melewati 45 detik. Coba lagi.");
-    throw e;
-  } finally { clearTimeout(timer); }
+  return callGas<T>(action, payload, true);
 }
 export const isSafeString = (v: unknown, max = 180) => typeof v === "string" && v.trim().length > 0 && v.trim().length <= max;
 export function safeUpload(v: unknown, maxBytes = 2_000_000): v is {name:string; mime:string; data:string} {

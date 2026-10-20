@@ -4,7 +4,7 @@ import {normalizeLanding,DEFAULT_LANDING} from '@/lib/landing';
 export const runtime='nodejs';
 export const maxDuration=60;
 export async function GET(){
- if(!process.env.OFFICE_GAS_ENDPOINT||!process.env.OFFICE_GAS_SECRET) return NextResponse.json({ok:true,data:DEFAULT_LANDING,configured:false},{headers:{'Cache-Control':'public, max-age=60'}});
+ if(!process.env.GAS_ENDPOINT||!process.env.GAS_SECRET) return NextResponse.json({ok:true,data:DEFAULT_LANDING,configured:false},{headers:{'Cache-Control':'public, max-age=60'}});
  try{
   const data=await callOffice('getLanding');
   return NextResponse.json({ok:true,data:normalizeLanding(data),configured:true},{headers:{'Cache-Control':'public, max-age=60, s-maxage=300, stale-while-revalidate=600'}});

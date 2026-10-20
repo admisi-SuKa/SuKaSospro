@@ -2,7 +2,7 @@
 
 **Referensi visual:** pola landing penerimaan mahasiswa yang editorial seperti Admisi UMM, **tetap menggunakan warna hijau–emas Sospro/UIN SuKa**. Proyek merupakan pengembangan dari ZIP website Sospro sebelumnya, bukan aplikasi baru.
 
-**Mulai dari:** [`MULAI_DI_SINI.txt`](MULAI_DI_SINI.txt), [`SETUP_ADMINISTRASI.md`](SETUP_ADMINISTRASI.md), dan [`SETUP_LANDING_IG.md`](SETUP_LANDING_IG.md).
+**Mulai dari:** [`MULAI_DI_SINI.txt`](MULAI_DI_SINI.txt), **[`SETUP_APPS_SCRIPT_TERPADU.md`](SETUP_APPS_SCRIPT_TERPADU.md)**, dan [`SETUP_LANDING_IG.md`](SETUP_LANDING_IG.md).
 
 **Beranda baru:** hero slider, pencarian prodi, jenjang S1/D4/S2/S3/Profesi, program baru, kegiatan Sospro dari API lama, surat, peminjaman alat, bahan Sospro, galeri, Instagram Admisi (Meta API bila diotorisasi), dan footer Admisi resmi.
 
@@ -63,7 +63,7 @@ Kemudian buka `http://localhost:3000`.
 3. Import repository tersebut di Vercel.
 4. Tambahkan environment variable dari `.env.example`.
 5. Deploy.
-6. Hubungkan Apps Script mengikuti `apps-script/SETUP_GOOGLE_SHEETS.md`. Cukup jalankan `setupSosproDatabase()` sekali; sheet, header, format dasar, dan `API_SECRET` akan dibuat otomatis.
+6. Buat SATU Apps Script baru dari `apps-script/Code.gs` dan ikuti `SETUP_APPS_SCRIPT_TERPADU.md`. Isi `SHEET_ID` & `DRIVE_FOLDER_ID`, lalu jalankan `setupSospro()` sekali untuk membuat 9 sheet; `API_SECRET` otomatis dibuat jika belum ada.
 
 ## Data program studi
 
@@ -119,8 +119,8 @@ CDN yang digunakan:
 
 ## Modul baru: Administrasi Surat, Peminjaman Alat, dan Bahan Sospro (Netlify)
 
-ZIP ini sudah mencakup modul Next.js, server-side API, dan Apps Script administrasi **terpisah** dari Apps Script kegiatan yang sudah ada.
+ZIP ini sudah mencakup modul Next.js, server-side API, dan **SATU Apps Script terpadu** untuk kegiatan/presensi/doorprize, surat, peminjaman, Bahan Sospro, dan landing page.
 
-Mulai dari **[SETUP_ADMINISTRASI.md](SETUP_ADMINISTRASI.md)**. Siapkan Spreadsheet ID dan Folder Drive ID ketika akan mengonfigurasi Apps Script. Menu publik `Bahan Sospro` (`/layanan/bahan`) menampilkan materi yang dipublikasikan admin, sedangkan pengelolaannya tersedia di `/admin/layanan/bahan`. Batas upload bahan saat ini 3 MB per file; file besar dapat memakai tautan HTTPS.
+Mulai dari **[SETUP_APPS_SCRIPT_TERPADU.md](SETUP_APPS_SCRIPT_TERPADU.md)**. Siapkan Spreadsheet ID dan Folder Drive ID ketika akan mengonfigurasi Apps Script. Menu publik `Bahan Sospro` (`/layanan/bahan`) menampilkan materi yang dipublikasikan admin, sedangkan pengelolaannya tersedia di `/admin/layanan/bahan`. Batas upload bahan saat ini 3 MB per file; file besar dapat memakai tautan HTTPS.
 
 **Penting:** Proses persetujuan saat ini menggunakan unggah PDF akhir yang sudah ditandatangani di luar aplikasi. Belum ada integrasi TTE tersertifikasi atau penerbitan surat dinas otomatis. Pengujian end-to-end membutuhkan deployment Apps Script dengan ID spreadsheet/folder yang valid.

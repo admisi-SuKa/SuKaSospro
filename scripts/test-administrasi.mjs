@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-const source=fs.readFileSync(new URL('../apps-script-administrasi/Code.gs',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../apps-script/Code.gs',import.meta.url),'utf8');
 const records={BAHAN_SOSPRO:[],RIWAYAT_STATUS:[]}, files=new Map();
 const mock={
  Utilities:{getUuid:()=>crypto.randomUUID(),base64Decode:s=>Array.from(Buffer.from(s,'base64')),base64Encode:a=>Buffer.from(a).toString('base64'),newBlob:(bytes,mime,name)=>({bytes,mime,name})},

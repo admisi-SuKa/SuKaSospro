@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-const src=fs.readFileSync(new URL('../apps-script-administrasi/Code.gs',import.meta.url),'utf8');
+const src=fs.readFileSync(new URL('../apps-script/Code.gs',import.meta.url),'utf8');
 const rows={PERMOHONAN:[],INVENTARIS:[],RIWAYAT_STATUS:[],BAHAN_SOSPRO:[],LANDING_PAGE:[],LANDING_ASSETS:[]};
 const uploads=new Map();
 const sandbox={

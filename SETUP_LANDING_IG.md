@@ -1,22 +1,19 @@
 # Pembaruan Landing Page Sospro (Gaya Editorial UMM, Warna UIN SuKa)
 
 ## Ringkasan
-- Beranda baru: hero slider (hingga 4 banner), search program studi, 5 jenjang, kartu layanan, 3 acara terbaru dari backend kegiatan lama, 3 bahan terbaru dari backend administrasi, galeri hingga 8 foto, seksi Instagram, CTA Admisi resmi.
+- Beranda baru: hero slider (hingga 4 banner), search program studi, 5 jenjang, kartu layanan, 3 acara terbaru dan 3 bahan terbaru dari backend Apps Script terpadu, galeri hingga 8 foto, seksi Instagram, CTA Admisi resmi.
 - Warna UIN SuKa tetap: `#073f38`, `#0b6b5b`, `#13806b`, `#d7a928`, putih lembut.
 - Konten admin dikendalikan melalui `/admin/layanan/landing`, **hanya role admin**.
 - Konten dinamis disimpan ke **Google Sheets** (`LANDING_PAGE`), gambar unggahan publik di Google Drive folder yang Anda tentukan, beserta indeksnya di `LANDING_ASSETS`.
 - Modul lama (kegiatan, presensi, doorprize, permohonan surat, inventaris, bahan) tetap ada.
 
-## Pembaruan backend (wajib untuk menyimpan landing page)
-1. Buat salinan cadangan Apps Script administrasi dan spreadsheet sebelum memperbarui.
-2. Buka proyek Apps Script administrasi **yang terpisah** dari Apps Script kegiatan lama.
-3. Tempel versi TERBARU `apps-script-administrasi/Code.gs` ke proyek Apps Script administrasi.
-4. Properties tetap: `SHEET_ID`, `DRIVE_FOLDER_ID`, `API_SECRET`.
-5. Jalankan `setupAdministrasi()` ulang. Fungsi ini menambah `LANDING_PAGE` & `LANDING_ASSETS`, dan tidak menghapus baris yang sudah ada.
-6. Perbarui deployment Web App yang lama menjadi **versi baru** (Manage deployments → Edit → Version New version). Jangan hanya menyimpan file tanpa redeploy.
-7. Pastikan `OFFICE_GAS_ENDPOINT` dan `OFFICE_GAS_SECRET` di Netlify tetap mengarah ke proyek Apps Script administrasi tersebut.
-8. Masuk `/admin/layanan/login`, login sebagai **admin**, lalu masuk `/admin/layanan/landing`. Atur banner, teks pengumuman, dan galeri; klik **Simpan Perubahan**.
-9. `LANDING_PAGE` akan terisi satu baris dengan key `homepage`. Foto baru masuk ke Drive dalam mode privat dan ditampilkan kepada publik melalui endpoint terkontrol `/api/public/landing/image?id=IMG-...`. Hanya ID yang terdaftar di `LANDING_ASSETS` dapat ditampilkan.
+## Backend landing page: sudah ada dalam satu Apps Script terpadu
+
+Tidak ada proyek Apps Script kedua. Jalankan `setupSospro()` dari satu file `apps-script/Code.gs`.
+Fungsi ini sekaligus membuat sheet `LANDING_PAGE` dan `LANDING_ASSETS` bersama sheet kegiatan, permohonan, inventaris, dan bahan.
+
+Buka **`SETUP_APPS_SCRIPT_TERPADU.md`** untuk panduan setup. Setelah deploy, masuk `/admin/layanan/login` menggunakan akun role `admin`, lalu kelola banner dan galeri melalui `/admin/layanan/landing`.
+Semua data menggunakan `GAS_ENDPOINT` dan `GAS_SECRET` yang sama dengan fitur kegiatan. Foto masuk Drive privat dan diakses publik lewat route terkontrol.
 
 ## Foto & sumber gambar awal
 Contoh hero awal mengambil URL foto area UIN dari situs Admisi UIN; galeri awal dari situs Perpustakaan UIN. Foto dapat dimuat bergantung pada ketersediaan domain asal. Jika gambar tidak tersedia, website memakai `public/campus-illustration.svg` agar tidak terlihat rusak.
