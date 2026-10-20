@@ -38,22 +38,6 @@ button { cursor: pointer; }
   margin-inline: auto;
 }
 
-.unofficial-bar {
-  background: #fff5d6;
-  border-bottom: 1px solid #ecd895;
-  color: #5a4814;
-  font-size: 13px;
-}
-.unofficial-bar .container {
-  min-height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 8px;
-}
-.unofficial-bar strong { font-weight: 800; }
-
 .site-header {
   position: sticky;
   top: 0;
@@ -349,7 +333,6 @@ button { cursor: pointer; }
   .filter-grid > :first-child { grid-column: auto; }
   .form-card { padding: 20px; }
   .footer-bottom { flex-direction: column; }
-  .unofficial-bar .container { padding: 7px 0; min-height: 0; }
 }
 
 /* External interface icons: Bootstrap Icons (MIT) */
@@ -471,8 +454,8 @@ body { font-family: "Plus Jakarta Sans", "Manrope", Arial, Helvetica, sans-serif
 .lp-root .lp-eyebrow {font-size:11px;font-weight:850;letter-spacing:.15em;color:#13806b;text-transform:uppercase;}
 .lp-site-header {box-shadow:0 8px 36px rgba(6,43,32,.045);}
 .lp-header-inner {min-height:80px;gap:13px;}
-.lp-site-header .brand {min-width:210px;gap:10px;}
-.lp-site-header .brand-logo {width:42px;height:42px;object-fit:contain;}
+.lp-site-header .brand {min-width:184px;gap:0;}
+.lp-site-header .brand-logo {display:block;width:184px;height:auto;max-height:55px;object-fit:contain;}
 .lp-site-header .brand-copy b {font-size:15px;letter-spacing:-.01em;}
 .lp-brand-em {color:#13765e;}
 .lp-site-header .brand-copy>span {font-size:10px;margin-top:4px;}
@@ -653,7 +636,7 @@ body { font-family: "Plus Jakarta Sans", "Manrope", Arial, Helvetica, sans-serif
 .sr-only {position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 @media(max-width:1120px) {
  .lp-site-header .nav a {font-size:11px;padding-inline:6px;}
- .lp-header-inner .brand {min-width:195px;}
+ .lp-header-inner .brand {min-width:168px;}
  .lp-services-layout {gap:38px;}
 }
 @media(max-width:980px) {
@@ -778,4 +761,13 @@ body { font-family: "Plus Jakarta Sans", "Manrope", Arial, Helvetica, sans-serif
   .petugas-login-card {min-height:0;padding:24px;}
   .petugas-login-heading {margin-bottom:25px;}
   .petugas-login-subtitle {margin-top:17px;}
+}
+
+/* SosPro text wordmark in site header/footer (no emblem). */
+.footer-wordmark-wrap {display:inline-flex;align-items:center;padding:7px 13px;border-radius:12px;background:#fff;margin-bottom:13px;}
+.footer-wordmark {display:block;width:184px;height:auto;max-height:55px;object-fit:contain;}
+@media (max-width:640px) {
+  .lp-site-header .brand {min-width:0;}
+  .lp-site-header .brand-logo {width:158px;max-height:46px;}
+  .lp-header-inner {min-height:70px;}
 }

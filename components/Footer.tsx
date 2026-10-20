@@ -1,16 +1,14 @@
 import Link from "next/link";
 
-const UIN_LOGO = "https://admisi.uin-suka.ac.id/img/logo_uin.png";
-
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
           <div>
-            <img className="footer-logo" src={UIN_LOGO} alt="Logo UIN Sunan Kalijaga" />
-            <h3>Jelajah Studi UIN SUKA</h3>
-            <p>Microsite nonresmi untuk membantu kegiatan sosialisasi dan promosi program pendidikan UIN Sunan Kalijaga Yogyakarta.</p>
+            <Link href="/" className="footer-wordmark-wrap" aria-label="SosPro — Beranda"><img className="footer-wordmark" src="/sospro-wordmark.png" width={184} height={49} alt="SosPro" /></Link>
+            <h3>Jelajah Studi & Layanan Sospro</h3>
+            <p>Informasi program studi, kegiatan sosialisasi, bahan promosi, dan layanan administrasi dalam satu portal.</p>
             <p><strong style={{color: "#ffe8a0"}}>Catatan penting:</strong> jadwal, persyaratan, biaya, status akreditasi, dan pembukaan jalur dapat berubah. Verifikasi kembali melalui situs resmi sebelum mengambil keputusan pendaftaran.</p>
           </div>
           <div>
@@ -33,8 +31,8 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>Materi sosialisasi — bukan kanal resmi universitas.</span>
-          <span><Link href="/login">Login Petugas</Link> · <Link href="/admin/login">Admin Kegiatan</Link> · <Link href="/admin/layanan/login">Admin Layanan</Link></span>
+          <span>SosPro · Sosialisasi dan Promosi</span>
+          <span><Link href="/login">Login</Link> · <Link href="/admin/login">Admin Kegiatan</Link> · <Link href="/admin/layanan/login">Admin Layanan</Link></span>
         </div>
       </div>
     </footer>

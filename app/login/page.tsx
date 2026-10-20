@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Login Petugas — Sospro UIN SUKA",
+  title: "Login — SosPro",
   description: "Pilih login administrasi atau kegiatan Sospro UIN Sunan Kalijaga.",
 };
 
@@ -11,7 +11,7 @@ export default function LoginPetugasPage() {
       <section className="container petugas-login-container">
         <div className="petugas-login-heading">
           <span className="lp-eyebrow">AKSES KHUSUS PETUGAS</span>
-          <h1>Login Petugas Sospro</h1>
+          <h1>Login</h1>
           <p>Pilih panel sesuai tugas Anda. Halaman ini hanya untuk petugas yang memiliki akun atau kata sandi yang telah diberikan.</p>
         </div>
         <div className="petugas-login-grid">

@@ -1,0 +1,33 @@
+PATCH LOGO SOSPRO + HAPUS DISCLAIMER + LOGIN
+===========================================
+
+PATCH HANYA FILE YANG DIUBAH dari:
+Sospro_UIN_SuKa_Satu_AppsScript_Tanpa_Beasiswa_Login_Jelas.zip
+Kompatibel juga setelah memasang PATCH_Sospro_Fix_AppsScript_HTTP405.zip, karena tidak mengubah lib/gas.ts.
+
+FILE DALAM PATCH:
+- components/Header.tsx
+- components/Footer.tsx
+- app/layout.tsx
+- app/login/page.tsx
+- app/globals.css
+- public/sospro-wordmark.png
+- public/favicon-sospro.png
+
+PERUBAHAN:
+1. Mengganti logo header dan footer dengan wordmark teks SosPro hijau-emas pilihan Anda.
+2. Mengganti ikon tab browser dengan huruf S dari tipografi yang sama.
+3. Menghapus banner besar 'Bukan website resmi UIN Sunan Kalijaga...' di atas navbar.
+4. Memperbarui kalimat footer menjadi keterangan informasional yang netral.
+5. Mengganti tombol navbar desktop/HP dan tautan footer menjadi 'Login'.
+6. Judul halaman /login menjadi 'Login'; pilihan Admin Kegiatan & Admin Layanan tetap tersedia.
+
+CARA INSTAL:
+1. Backup proyek yang sedang digunakan.
+2. Ekstrak ZIP patch INI ke root proyek (folder dengan app/, components/, public/, package.json).
+3. Pilih Replace/Overwrite untuk file yang namanya sama.
+4. Upload/commit ke GitHub dan deploy ulang di Netlify.
+5. Lakukan hard refresh jika logo lama masih terlihat (Ctrl/Cmd+Shift+R).
+
+JANGAN mengganti Google Apps Script atau mengubah environment variables Netlify untuk patch ini.
+Tautan ke situs Admisi resmi masih dipertahankan; patch tidak mengklaim status situs sebagai kanal resmi.

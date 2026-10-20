@@ -3,11 +3,9 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const UIN_LOGO = "https://admisi.uin-suka.ac.id/img/logo_uin.png";
-
 export const metadata: Metadata = {
   title: "Jelajah Studi UIN SUKA — Sosialisasi & Promosi",
-  description: "Microsite nonresmi untuk membantu sosialisasi program studi dan jalur penerimaan UIN Sunan Kalijaga.",
+  description: "Portal SosPro untuk informasi program studi, kegiatan sosialisasi, dan layanan permohonan Admisi UIN Sunan Kalijaga.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -21,17 +19,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
         />
-        <link rel="icon" type="image/png" href={UIN_LOGO} />
-        <link rel="shortcut icon" type="image/png" href={UIN_LOGO} />
-        <link rel="apple-touch-icon" href={UIN_LOGO} />
+        <link rel="icon" type="image/png" href="/favicon-sospro.png" />
+        <link rel="shortcut icon" type="image/png" href="/favicon-sospro.png" />
+        <link rel="apple-touch-icon" href="/favicon-sospro.png" />
       </head>
       <body>
-        <div className="unofficial-bar">
-          <div className="container">
-            <i className="bi bi-info-circle" aria-hidden="true" />
-            <span><strong>Bukan website resmi UIN Sunan Kalijaga.</strong> Website ini dibuat khusus untuk keperluan sosialisasi dan promosi. Informasi final selalu merujuk pada kanal resmi UIN dan Admisi.</span>
-          </div>
-        </div>
         <Header />
         {children}
         <Footer />
