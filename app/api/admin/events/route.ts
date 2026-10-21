@@ -7,10 +7,11 @@ import { demoEvents } from "@/data/demo-events";
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
-  if (!(getOfficeRequest(req)?.role === "admin")) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  const actor = getOfficeRequest(req);
+  if (actor?.role !== "admin") return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   try {
     if (!process.env.GAS_ENDPOINT && process.env.NEXT_PUBLIC_DEMO_MODE === "1") return NextResponse.json({ ok: true, data: demoEvents, demo: true });
-    const data = await callGas("listAdminEvents", {}, true);
+    const data = await callGas("listAdminEvents", {actor}, true);
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : "Gagal memuat kegiatan." }, { status: 500 });
@@ -19,11 +20,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!validOrigin(req)) return NextResponse.json({ ok: false, error: "Origin ditolak" }, { status: 403 });
-  if (!(getOfficeRequest(req)?.role === "admin")) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  const actor = getOfficeRequest(req);
+  if (actor?.role !== "admin") return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   const body = await req.json().catch(() => ({}));
   if (!process.env.GAS_ENDPOINT && process.env.NEXT_PUBLIC_DEMO_MODE === "1") return NextResponse.json({ ok: true, data: { ...body, id: `DEMO-${Date.now()}` }, demo: true });
   try {
-    const data = await callGas(body.id ? "updateEvent" : "createEvent", { event: body }, true);
+    const data = await callGas(body.id ? "updateEvent" : "createEvent", { event: body, actor }, true);
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : "Gagal menyimpan kegiatan." }, { status: 500 });

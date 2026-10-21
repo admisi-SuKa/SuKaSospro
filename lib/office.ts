@@ -4,30 +4,21 @@ import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
 export type OfficeRole = "admin" | "pejabat";
-export type OfficeUser = { username: string; name: string; role: OfficeRole };
-type StoredUser = OfficeUser & { passwordHash: string };
+export type OfficeUser = { username: string; name: string; role: OfficeRole; sessionVersion: string };
 const COOKIE = "sospro_office";
-const LIFETIME = 60 * 60 * 8;
+const LIFETIME = 60 * 60 * 2;
 
 function signingKey() {
   const key = process.env.OFFICE_SESSION_SECRET;
   if (!key || key.length < 32) throw new Error("OFFICE_SESSION_SECRET harus diisi minimal 32 karakter.");
   return key;
 }
-function users(): StoredUser[] {
-  try {
-    const list = JSON.parse(process.env.OFFICE_USERS_JSON || "[]");
-    if (!Array.isArray(list)) return [];
-    return list.filter((u): u is StoredUser => u && typeof u.username === "string" && typeof u.name === "string" && ["admin", "pejabat"].includes(u.role) && typeof u.passwordHash === "string");
-  } catch { return []; }
-}
-export function authenticateOffice(username: string, password: string): OfficeUser | null {
-  const entry = users().find(x => x.username.toLowerCase() === username.trim().toLowerCase());
-  if (!entry || !/^scrypt:[0-9a-f]{32}:[0-9a-f]{128}$/.test(entry.passwordHash)) return null;
-  const [, salt, expected] = entry.passwordHash.split(":");
-  const digest = crypto.scryptSync(password, Buffer.from(salt, "hex"), 64);
-  if (!crypto.timingSafeEqual(digest, Buffer.from(expected, "hex"))) return null;
-  return { username: entry.username, name: entry.name, role: entry.role };
+/** Kredensial diverifikasi oleh Apps Script dari sheet USERS, bukan ENV Netlify. */
+export async function authenticateOffice(username: string, password: string): Promise<OfficeUser | null> {
+  if (!/^[a-z][a-z0-9._-]{3,39}$/i.test(username.trim()) || password.length > 128 || !password) return null;
+  const user = await callOffice<OfficeUser | null>("authOffice", {username, password});
+  if (!user || !["admin", "pejabat"].includes(user.role) || !user.sessionVersion) return null;
+  return { username:user.username, name:user.name, role:user.role, sessionVersion:user.sessionVersion };
 }
 function sign(value: string) { return crypto.createHmac("sha256", signingKey()).update(value).digest("base64url"); }
 export function officeToken(user: OfficeUser): string {
@@ -41,8 +32,8 @@ export function parseOfficeToken(token?: string): OfficeUser | null {
     if (!payload || !mac || extra || mac.length !== sign(payload).length || !crypto.timingSafeEqual(Buffer.from(mac),Buffer.from(sign(payload)))) return null;
     const data = JSON.parse(Buffer.from(payload,"base64url").toString("utf8"));
     if (!data || data.exp < Date.now()/1000 || !["admin","pejabat"].includes(data.role)) return null;
-    const entry = users().find(u => u.username === data.username && u.role === data.role);
-    return entry ? { username: entry.username, name: entry.name, role: entry.role } : null;
+    if (!/^[a-z][a-z0-9._-]{3,39}$/i.test(data.username) || typeof data.name !== "string" || data.name.length > 100 || typeof data.sessionVersion !== "string" || data.sessionVersion.length < 20) return null;
+    return {username: data.username, name:data.name, role:data.role, sessionVersion:data.sessionVersion};
   } catch { return null; }
 }
 export function getOfficeRequest(req: NextRequest) { return parseOfficeToken(req.cookies.get(COOKIE)?.value); }

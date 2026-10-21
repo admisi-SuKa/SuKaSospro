@@ -1,7 +1,5 @@
-# Satu Google Apps Script untuk semua fitur
+# Panduan versi lama sudah digantikan
 
-Jangan mengikuti panduan lama yang memakai script terikat pada spreadsheet. Buat **satu** proyek Apps Script baru dari file `apps-script/Code.gs` dalam ZIP.
+Gunakan **`PANDUAN_SETUP_USERS_DAN_SLIDE.md`** pada root proyek untuk instruksi terbaru.
 
-Panduan langkah demi langkah: **[`../SETUP_APPS_SCRIPT_TERPADU.md`](../SETUP_APPS_SCRIPT_TERPADU.md)**.
-
-Di Apps Script: Project Settings → Script Properties → isi `SHEET_ID`, `DRIVE_FOLDER_ID`; pilih `setupSospro` → Run. `API_SECRET` otomatis dibuat jika belum ada. Setelah setup, Deploy sebagai Web app dan masukkan satu URL `/exec` beserta secret ke Netlify sebagai `GAS_ENDPOINT`, `GAS_SECRET`.
+Versi ini memakai satu Apps Script, sepuluh sheet (termasuk `USERS`), dan akun pertama diatur pada Script Properties (`ADMIN_USERNAME`, `ADMIN_PASSWORD`) sebelum `setupSospro` dijalankan. Login **tidak lagi** menggunakan `OFFICE_USERS_JSON` di Netlify.

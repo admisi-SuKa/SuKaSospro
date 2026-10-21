@@ -4,7 +4,8 @@ import { callGas } from "@/lib/gas";
 
 export async function POST(req: NextRequest) {
   if (!validOrigin(req)) return NextResponse.json({ ok: false, error: "Origin ditolak" }, { status: 403 });
-  if (!(getOfficeRequest(req)?.role === "admin")) {
+  const actor = getOfficeRequest(req);
+  if (actor?.role !== "admin") {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
     const data = await callGas("drawWinner", {
       eventId: body.eventId,
       prize: body.prize || "Doorprize",
+      actor,
     }, true);
     return NextResponse.json({ ok: true, data });
   } catch (error) {

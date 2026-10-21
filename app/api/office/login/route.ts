@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const password = String(body.password || "");
   if (password.length > 512) return NextResponse.json({error:"Kredensial tidak valid"},{status:401});
   try {
-    const user = authenticateOffice(username,password);
+    const user = await authenticateOffice(username,password);
     if (!user) return NextResponse.json({error:"Nama pengguna atau password salah"},{status:401});
     const res = NextResponse.json({ok:true,user});
     res.cookies.set(officeCookie.name,officeToken(user),{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"strict",path:"/",maxAge:officeCookie.maxAge});

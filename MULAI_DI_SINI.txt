@@ -1,33 +1,11 @@
-SOSPRO UIN SUNAN KALIJAGA — ZIP FULL STACK, SATU APPS SCRIPT
+SuKaSospro — Full Stack dengan 1 Apps Script, 1 login, dan USERS Google Sheets
 
-ANDA CUKUP BUAT SATU PROJECT APPS SCRIPT BARU!
+1. Buka PANDUAN_SETUP_USERS_DAN_SLIDE.md.
+2. Isi Script Properties: SHEET_ID, DRIVE_FOLDER_ID, ADMIN_USERNAME, ADMIN_PASSWORD.
+3. Ganti apps-script/Code.gs pada proyek Apps Script lama dan Run setupSospro.
+4. Deploy New version pada Google Apps Script.
+5. Netlify: GAS_ENDPOINT, GAS_SECRET (sama dengan API_SECRET), OFFICE_SESSION_SECRET, PUBLIC_SITE_URL.
+6. Deploy frontend baru; login melalui /login.
+7. Konten slide memuat URL s-uin2.jpg dan gambar Masjid Sunan Kalijaga dari lampiran.
 
-1. Buka SETUP_APPS_SCRIPT_TERPADU.md (panduan utama).
-2. Buat satu Spreadsheet kosong dan satu folder Google Drive privat.
-3. Buka https://script.google.com → New project.
-4. Salin seluruh file apps-script/Code.gs ke Code.gs project Anda.
-5. Project Settings → Script Properties:
-     SHEET_ID = ID spreadsheet
-     DRIVE_FOLDER_ID = ID folder Drive
-     API_SECRET = kosong/boleh diisi secret kuat (otomatis dibuat jika kosong)
-6. Pilih fungsi setupSospro → klik Run → Izinkan akses.
-7. Akan muncul 9 sheet: Events, Attendance, Winners, PERMOHONAN,
-   INVENTARIS, RIWAYAT_STATUS, BAHAN_SOSPRO, LANDING_PAGE, LANDING_ASSETS.
-8. Buka Script Properties, salin API_SECRET yang sudah dibuat.
-9. Deploy → New deployment → Web app (Execute as Me, Access Anyone).
-10. Di Netlify isi HANYA satu endpoint dan satu secret:
-      GAS_ENDPOINT = URL Apps Script /exec
-      GAS_SECRET = API_SECRET dari Script Properties
-11. Lengkapi login petugas OFFICE_USERS_JSON, OFFICE_SESSION_SECRET,
-    login kegiatan ADMIN_PASSWORD/SESSION_SECRET seperti panduan.
-12. Deploy Netlify, uji kegiatan, presensi, permohonan surat, alat,
-    Bahan Sospro, dan Landing Manager.
-
-TIDAK PERLU PROYEK APPS SCRIPT KEDUA!
-File ZIP memiliki SATU Code.gs saja pada folder apps-script/.
-
-CATATAN:
-- File dokumen disimpan privat di Drive. Jangan bagikan folder publik.
-- Instagram otomatis memerlukan otorisasi Meta, opsional.
-- TTE tersertifikasi BSrE tidak termasuk; PDF final ditandatangani sesuai prosedur luar aplikasi.
-- Build Next.js produksi harus diuji setelah npm install dan ID Google diisi.
+Pengaturan OFFICE_USERS_JSON tidak lagi diperlukan.

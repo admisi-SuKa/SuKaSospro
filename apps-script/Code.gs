@@ -6,7 +6,7 @@
  * Frontend Next.js menggunakan hanya GAS_ENDPOINT + GAS_SECRET.
  */
 var SOSPRO_EVENT_ACTIONS = ['listPublicEvents','submitAttendance','listAdminEvents','createEvent','updateEvent','getAttendance','drawWinner'];
-var SOSPRO_OFFICE_ACTIONS = ['inventoryPublic','submit','track','dashboard','decision','addItem','handover','returnItem','getFile','listMaterials','adminMaterials','saveMaterial','deleteMaterial','getMaterialFile','getLanding','saveLanding','uploadLandingImage','getLandingImage'];
+var SOSPRO_OFFICE_ACTIONS = ['inventoryPublic','submit','track','dashboard','decision','addItem','handover','returnItem','getFile','listMaterials','adminMaterials','saveMaterial','deleteMaterial','getMaterialFile','getLanding','saveLanding','uploadLandingImage','getLandingImage','authOffice'];
 
 /** HANYA fungsi ini yang perlu dipilih lalu klik RUN pada instalasi pertama. */
 function setupSospro() {
@@ -19,11 +19,14 @@ function setupSospro() {
   if (!p.getProperty('API_SECRET')) p.setProperty('API_SECRET', createSecret_());
   var events = setupKegiatan_();
   var admin = setupAdministrasi_();
+  var initialAccount = setupSosproUsers_();
+  var slides = setupSosproSlides_();
   var names = ['Events','Attendance','Winners'].concat(Object.keys(O_HEADERS));
   Logger.log('SETUP BERHASIL: Spreadsheet = ' + ss.getName() + ', Drive = ' + folder.getName());
-  Logger.log('9 sheet tersedia: ' + names.join(', '));
+  Logger.log(names.length + ' sheet tersedia: ' + names.join(', '));
+  Logger.log('Akun awal: ' + initialAccount + '; Banner baru: ' + slides);
   Logger.log('Salin API_SECRET dari Project Settings > Script Properties ke GAS_SECRET pada Netlify. Jangan publikasikan nilainya.');
-  return {ok:true, sheets:names, events:events.ok, admin:admin};
+  return {ok:true, sheets:names, events:events.ok, admin:admin, account:initialAccount, slides:slides};
 }
 
 function doGet() {
@@ -402,12 +405,10 @@ function requireAdmin_(body) {
   }
 
   if (received !== expected) {
-    throw new Error(
-      "Akses admin ditolak: GAS_SECRET tidak sama dengan API_SECRET. " +
-      "Panjang secret Netlify=" + received.length + ", Apps Script=" + expected.length + ". " +
-      "Salin ulang API_SECRET tanpa tanda kutip, simpan di Netlify, lalu Redeploy."
-    );
+    throw new Error('Akses admin ditolak: GAS_SECRET tidak sama dengan API_SECRET. Periksa Script Properties dan Netlify.');
   }
+  // Auth kegiatan juga memverifikasi akun, role, dan versi sesi aktif.
+  oCheckActor_(body.actor,'admin');
 }
 
 function rowsAsObjects_(sheetName) {
@@ -469,14 +470,15 @@ function json_(payload) {
  * Deploy Web App: Execute as = Me; Who has access = Anyone.
  * Semua pemanggilan melalui route SERVER Next.js dengan API_SECRET, BUKAN langsung dari browser.
  */
-var O_NAMES = { REQUESTS:'PERMOHONAN', INVENTORY:'INVENTARIS', LOG:'RIWAYAT_STATUS', MATERIALS:'BAHAN_SOSPRO', LANDING:'LANDING_PAGE', LANDING_ASSETS:'LANDING_ASSETS' };
+var O_NAMES = { REQUESTS:'PERMOHONAN', INVENTORY:'INVENTARIS', LOG:'RIWAYAT_STATUS', MATERIALS:'BAHAN_SOSPRO', LANDING:'LANDING_PAGE', LANDING_ASSETS:'LANDING_ASSETS', USERS:'USERS' };
 var O_HEADERS = {
   PERMOHONAN:['code','tokenHash','kind','name','institution','faculty','school','phone','email','purpose','target','location','dateStart','dateEnd','itemId','quantity','status','note','attachmentId','signatureId','signedPdfId','createdAt','updatedAt'],
   INVENTARIS:['id','name','category','total','active','createdAt'],
   RIWAYAT_STATUS:['code','actor','status','note','time'],
   BAHAN_SOSPRO:['id','title','category','description','fileName','mime','size','fileId','externalUrl','published','deleted','createdAt','updatedAt'],
   LANDING_PAGE:['key','valueJson','updatedAt','updatedBy'],
-  LANDING_ASSETS:['id','fileId','mime','name','createdAt','actor']
+  LANDING_ASSETS:['id','fileId','mime','name','createdAt','actor'],
+  USERS:['username','displayName','role','salt','passwordHash','active','sessionVersion','createdAt','updatedAt','lastLoginAt']
 };
 function setupAdministrasi_(){
   var p=PropertiesService.getScriptProperties();
@@ -501,6 +503,7 @@ function officeDispatch_(b) {
   // Autentikasi dilakukan sekali pada doPost terpadu.
   var data;
   switch(String(b.action||'')){
+    case 'authOffice':data=oAuthenticateOffice_(b);break;
     case 'inventoryPublic': data=oInventory_().filter(function(i){return i.active==='true'}).map(function(i){i.active=true;return i});break;
     case 'submit':data=oSubmit_(b);break;
     case 'track':data=oTrack_(b.code,b.token);break;
@@ -537,7 +540,12 @@ function oUpdate_(name,row,obj){var h=O_HEADERS[name];oSheet_(name).getRange(row
 function oWithLock_(fn){var lock=LockService.getScriptLock();if(!lock.tryLock(25000))throw new Error('Sistem sedang sibuk, silakan ulangi');try{return fn()}finally{lock.releaseLock()}}
 function oTime_(){return new Date().toISOString()}
 function oHash_(s){return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,s).map(function(b){return ('0'+(b<0?b+256:b).toString(16)).slice(-2)}).join('')}
-function oCheckActor_(actor,role){if(!actor || !actor.username || !actor.name || ['admin','pejabat'].indexOf(actor.role)===-1)throw new Error('Identitas petugas tidak sah');if(role && actor.role!==role)throw new Error('Role tidak diizinkan')}
+function oCheckActor_(actor,role){
+  if(!actor || !actor.username || !actor.name || ['admin','pejabat'].indexOf(actor.role)===-1 || !actor.sessionVersion)throw new Error('Identitas petugas tidak sah');
+  if(role && actor.role!==role)throw new Error('Role tidak diizinkan');
+  var u=oRows_(O_NAMES.USERS).find(function(x){return x.username.toLowerCase()===String(actor.username).toLowerCase()});
+  if(!u || u.active!=='true' || u.role!==actor.role || u.sessionVersion!==actor.sessionVersion)throw new Error('Akun nonaktif atau sesi tidak berlaku lagi; silakan login ulang.');
+}
 function oLog_(code,actor,status,note){oAppend_(O_NAMES.LOG,{code:code,actor:actor,status:status,note:note,time:oTime_()})}
 function oUpload_(value,filename,mime,maxBytes){
   if(!value || typeof value.data!=='string' || typeof value.name!=='string' || value.data.length>Math.ceil(maxBytes*4/3)+20)throw new Error('Berkas tidak valid atau terlalu besar');
@@ -640,6 +648,107 @@ function oGetFile_(b){
 }
 
 
+/** AKUN PENGGUNA: sandi tersimpan sebagai hash HMAC berulang dengan salt acak dan pepper privat. */
+function sosproUserPasswordHash_(password,salt){
+  var pepper=PropertiesService.getScriptProperties().getProperty('USER_PEPPER');
+  if(!pepper)throw new Error('USER_PEPPER belum tersedia. Jalankan setupSospro().');
+  var str=String(password)+':'+salt;
+  for(var k=0;k<1500;k++){
+    var bytes=Utilities.computeHmacSha256Signature(str,pepper);
+    str=Utilities.base64Encode(bytes);
+  }
+  return str;
+}
+function sosproValidUsername_(name){return /^[a-z][a-z0-9._-]{3,39}$/.test(String(name||''));}
+function sosproValidPassword_(value){return typeof value==='string' && value.length>=12 && value.length<=128 && /[A-Za-z]/.test(value) && /[0-9]/.test(value);}
+function sosproCreateUser_(username,password,displayName,role){
+  username=String(username||'').trim().toLowerCase();
+  if(!sosproValidUsername_(username))throw new Error('Username 4–40 karakter, huruf kecil/angka/titik/_/- dan diawali huruf.');
+  if(!sosproValidPassword_(password))throw new Error('Password minimal 12 karakter, memuat huruf dan angka, maksimal 128.');
+  if(['admin','pejabat'].indexOf(role)===-1)throw new Error('Role tidak valid.');
+  if(oRows_(O_NAMES.USERS).some(function(u){return u.username.toLowerCase()===username}))throw new Error('Username sudah terdaftar.');
+  var now=oTime_(),salt=Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,'');
+  oAppend_(O_NAMES.USERS,{username:username,displayName:oClean_(displayName||username,100),role:role,salt:salt,passwordHash:sosproUserPasswordHash_(password,salt),active:'true',sessionVersion:Utilities.getUuid(),createdAt:now,updatedAt:now,lastLoginAt:''});
+  return username;
+}
+/** Dipanggil otomatis oleh setupSospro. ADMIN_PASSWORD akan DIHAPUS dari Script Properties jika berhasil. */
+function setupSosproUsers_(){
+  var p=PropertiesService.getScriptProperties();
+  if(!p.getProperty('USER_PEPPER'))p.setProperty('USER_PEPPER',createSecret_());
+  var admins=oRows_(O_NAMES.USERS).filter(function(u){return u.role==='admin' && u.active==='true'});
+  if(admins.length)return 'Admin sudah tersedia; tidak ditimpa';
+  var username=p.getProperty('ADMIN_USERNAME'),password=p.getProperty('ADMIN_PASSWORD');
+  if(!username||!password)throw new Error('Sebelum setup pertama, isi ADMIN_USERNAME dan ADMIN_PASSWORD pada Script Properties (selain SHEET_ID dan DRIVE_FOLDER_ID).');
+  var created=sosproCreateUser_(username,password,p.getProperty('ADMIN_NAME')||'Admin SosPro','admin');
+  p.deleteProperty('ADMIN_PASSWORD');
+  return 'Akun admin dibuat: '+created+' (password awal dihapus dari Script Properties)';
+}
+/** Jika perlu menambahkan petugas (admin/pejabat), set NEW_USERNAME, NEW_PASSWORD,
+ * NEW_ROLE (admin/pejabat), NEW_NAME di Script Properties, lalu pilih fungsi ini dan Run.
+ */
+function tambahUserSospro(){
+  return oWithLock_(function(){
+    var p=PropertiesService.getScriptProperties();
+    var username=sosproCreateUser_(p.getProperty('NEW_USERNAME'),p.getProperty('NEW_PASSWORD'),p.getProperty('NEW_NAME')||p.getProperty('NEW_USERNAME'),p.getProperty('NEW_ROLE')||'pejabat');
+    ['NEW_PASSWORD','NEW_USERNAME','NEW_NAME','NEW_ROLE'].forEach(function(k){p.deleteProperty(k)});
+    Logger.log('Akun dibuat: '+username+'; password dihapus dari Script Properties.');
+    return username;
+  });
+}
+/** Reset password aman melalui Script Properties: RESET_USERNAME, RESET_PASSWORD, lalu Run.
+ * Ini juga membatalkan sesi sebelumnya karena sessionVersion berubah.
+ */
+function resetPasswordSospro(){
+  return oWithLock_(function(){
+    var p=PropertiesService.getScriptProperties(),name=String(p.getProperty('RESET_USERNAME')||'').trim().toLowerCase(),password=p.getProperty('RESET_PASSWORD');
+    if(!sosproValidPassword_(password))throw new Error('Isi RESET_PASSWORD minimal 12 karakter memuat huruf dan angka.');
+    var u=oRows_(O_NAMES.USERS).find(function(x){return x.username.toLowerCase()===name});
+    if(!u)throw new Error('Akun tidak ditemukan.');
+    u.salt=Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,'');
+    u.passwordHash=sosproUserPasswordHash_(password,u.salt);
+    u.sessionVersion=Utilities.getUuid();u.updatedAt=oTime_();
+    oUpdate_(O_NAMES.USERS,u._row,u);
+    p.deleteProperty('RESET_PASSWORD');p.deleteProperty('RESET_USERNAME');
+    Logger.log('Password akun '+name+' diperbarui; sesi lama dibatalkan.');
+    return true;
+  });
+}
+function oAuthenticateOffice_(b){
+  var username=String(b.username||'').trim().toLowerCase(),password=String(b.password||'');
+  if(!sosproValidUsername_(username)||password.length>128||!password)return null;
+  var cache=CacheService.getScriptCache(),key='auth-'+oHash_(username).slice(0,28);
+  var tries=Number(cache.get(key)||'0');
+  if(tries>=6)throw new Error('Terlalu banyak percobaan login. Coba lagi dalam 15 menit.');
+  var u=oRows_(O_NAMES.USERS).find(function(x){return x.username.toLowerCase()===username});
+  if(!u||u.active!=='true'||!u.salt||!u.passwordHash||sosproUserPasswordHash_(password,u.salt)!==u.passwordHash){
+    cache.put(key,String(tries+1),900);
+    return null;
+  }
+  cache.remove(key);
+  // Perbarui hanya satu sel login terakhir agar tidak menimpa reset password paralel.
+  try{oSheet_(O_NAMES.USERS).getRange(u._row,O_HEADERS.USERS.indexOf('lastLoginAt')+1).setValue(oTime_())}catch(ignore){}
+  // Login tidak mengirim hash, salt, atau data rahasia ke frontend.
+  return {username:u.username,name:u.displayName,role:u.role,sessionVersion:u.sessionVersion};
+}
+/** Penambahan banner baru hanya jika slot tersedia; banner existing tidak dihapus. */
+function setupSosproSlides_(){
+  var row=oRows_(O_NAMES.LANDING).find(function(r){return r.key==='homepage'});
+  if(!row)return 'Konten default website menampilkan dua foto baru. Belum ada kustomisasi Sheet.';
+  var cfg;try{cfg=JSON.parse(row.valueJson)}catch(e){return 'Data landing tidak valid, perbaiki melalui Dashboard';}
+  if(!Array.isArray(cfg.banners))return 'Konfigurasi banner belum tersedia';
+  var incoming=[
+   {id:'uin-slide-2',eyebrow:'JELAJAH UIN SUNAN KALIJAGA',title:'Temukan Masa Depanmu di UIN Suka.',description:'Kenali kampus, pilihan studi, dan peluang pendidikan melalui SosPro UIN Sunan Kalijaga.',imageUrl:'https://link.uin-suka.ac.id/theme/web/slide/s-uin2.jpg',ctaLabel:'Jelajahi Program Studi',ctaHref:'/program-studi'},
+   {id:'masjid-sunan-kalijaga',eyebrow:'KAMPUS YOGYAKARTA',title:'Bertumbuh dalam Ilmu, Berkarya untuk Sesama.',description:'Kenali lingkungan akademik UIN Sunan Kalijaga dan kegiatan Sosialisasi & Promosi.',imageUrl:'/masjid-sunan-kalijaga.jpg',ctaLabel:'Lihat Kegiatan Sospro',ctaHref:'/kegiatan'}
+  ];
+  var added=0;
+  incoming.forEach(function(b){
+    if(cfg.banners.some(function(x){return x.imageUrl===b.imageUrl}))return;
+    if(cfg.banners.length<4){cfg.banners.push(b);added++}
+  });
+  if(added){row.valueJson=JSON.stringify(cfg);row.updatedAt=oTime_();row.updatedBy='setupSospro';oUpdate_(O_NAMES.LANDING,row._row,row)}
+  return added+' banner ditambahkan; jika sudah 4 banner, tambahkan manual melalui Landing Page Manager.';
+}
+
 /** MENU BAHAN SOSPRO. Disimpan di BAHAN_SOSPRO dan file privat di Drive. */
 function oMaterialView_(r){return {id:r.id,title:r.title,category:r.category,description:r.description,fileName:r.fileName,mime:r.mime,size:Number(r.size||0),hasFile:!!r.fileId,externalUrl:r.externalUrl,published:r.published==='true',createdAt:r.createdAt,updatedAt:r.updatedAt};}
 function oListMaterials_(admin){return oRows_(O_NAMES.MATERIALS).filter(function(r){return r.deleted!=='true' && (admin || r.published==='true')}).reverse().map(oMaterialView_);}
@@ -704,7 +813,7 @@ function oGetLanding_(){
 }
 function oLandingUrl_(v,isImage){
   if(typeof v!=='string'||v.length>1000)throw new Error('URL tidak valid');
-  if(isImage && (v==='/campus-illustration.svg'||/^\/api\/public\/landing\/image\?id=IMG-[A-F0-9]{12}$/.test(v)))return v;
+  if(isImage && ((v==='/campus-illustration.svg'||v==='/masjid-sunan-kalijaga.jpg')||/^\/api\/public\/landing\/image\?id=IMG-[A-F0-9]{12}$/.test(v)))return v;
   if(!isImage && v.charAt(0)==='/' && v.charAt(1)!=='/' && !/[\\<>"']/.test(v))return v;
   if(/^https:\/\/[^\s<>"']+$/i.test(v))return v;
   throw new Error('Gunakan URL HTTPS atau jalur internal yang valid');

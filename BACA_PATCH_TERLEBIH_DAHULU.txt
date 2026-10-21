@@ -1,0 +1,14 @@
+PATCH — SuKaSospro USERS + SLIDE
+
+BASE: proyek SuKaSospro-main.zip yang Anda unggah (versi satu login).
+
+1. Ekstrak patch ke akar proyek (folder tempat package.json), lalu Replace file yang sama.
+2. File baru public/masjid-sunan-kalijaga.jpg harus ikut tersalin.
+3. Google Apps Script: gantikan Code.gs dengan apps-script/Code.gs, isi ADMIN_USERNAME dan ADMIN_PASSWORD pada Script Properties jika belum ada admin USERS, Run setupSospro.
+4. Deploy → Manage deployments → Edit → New version → Deploy.
+5. Push website ke GitHub, deploy ulang Netlify.
+6. OFFICE_USERS_JSON di Netlify tidak dipakai lagi, tetapi GAS_ENDPOINT, GAS_SECRET, OFFICE_SESSION_SECRET wajib tersedia.
+7. Lihat PANDUAN_SETUP_USERS_DAN_SLIDE.md untuk detail & reset password.
+8. Jika LANDING_PAGE Anda sudah menyimpan 4 banner, masukkan tautan gambar baru manual melalui Landing Page Manager agar konten lama tidak ditimpa.
+
+Tidak perlu mengganti SHEET_ID dan DRIVE_FOLDER_ID. ZIP ini tidak membuat aplikasi atau Apps Script terpisah.

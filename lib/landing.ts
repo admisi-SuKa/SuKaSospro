@@ -12,6 +12,8 @@ export const DEFAULT_LANDING: LandingContent = {
   announcement: 'Jelajahi program studi, kegiatan sosialisasi, dan layanan admisi dalam satu tempat.',
   announcementHref: '/program-studi',
   banners: [
+    { id: 'uin-slide-2', eyebrow: 'JELAJAH UIN SUNAN KALIJAGA', title: 'Temukan Masa Depanmu di UIN Suka.', description: 'Kenali kampus, pilihan studi, dan peluang pendidikan melalui SosPro UIN Sunan Kalijaga.', imageUrl: 'https://link.uin-suka.ac.id/theme/web/slide/s-uin2.jpg', ctaLabel: 'Jelajahi Program Studi', ctaHref: '/program-studi' },
+    { id: 'masjid-sunan-kalijaga', eyebrow: 'KAMPUS YOGYAKARTA', title: 'Bertumbuh dalam Ilmu, Berkarya untuk Sesama.', description: 'Kenali lingkungan akademik UIN Sunan Kalijaga dan kegiatan Sosialisasi & Promosi.', imageUrl: '/masjid-sunan-kalijaga.jpg', ctaLabel: 'Lihat Kegiatan Sospro', ctaHref: '/kegiatan' },
     { id: 'home-1', eyebrow: 'SOSIALISASI & PROMOSI · UIN SUNAN KALIJAGA', title: 'Langkah Besar Dimulai dari Sini.', description: 'Kenali pilihan program studi, jalur masuk, dan peluang masa depanmu di UIN Sunan Kalijaga Yogyakarta.', imageUrl: 'https://servdev2.admisi.uin-suka.ac.id/storage/foto-informasi/01gvhm2fw78r6car5axdycgqqe.jpg', ctaLabel: 'Jelajahi Program Studi', ctaHref: '/program-studi' },
     { id: 'home-2', eyebrow: 'LAYANAN SOSPRO · PRAKTIS & TERINTEGRASI', title: 'Lebih Dekat. Lebih Terhubung.', description: 'Ajukan kegiatan sosialisasi, pinjam perlengkapan, dan unduh bahan promosi melalui satu portal yang mudah digunakan.', imageUrl: '/campus-illustration.svg', ctaLabel: 'Buka Pusat Layanan', ctaHref: '/layanan' },
   ],
@@ -22,7 +24,7 @@ export const DEFAULT_LANDING: LandingContent = {
   ],
   instagramTitle: 'Cerita terbaru dari Admisi',
 };
-const validImage = (value: unknown) => typeof value === 'string' && value.length <= 1000 && (value.startsWith('/campus-illustration.svg') || /^\/api\/public\/landing\/image\?id=IMG-[A-F0-9]{12}$/i.test(value) || /^https:\/\/[^\s<>"']+$/i.test(value));
+const validImage = (value: unknown) => typeof value === 'string' && value.length <= 1000 && ((value === '/campus-illustration.svg' || value === '/masjid-sunan-kalijaga.jpg') || /^\/api\/public\/landing\/image\?id=IMG-[A-F0-9]{12}$/i.test(value) || /^https:\/\/[^\s<>"']+$/i.test(value));
 const validHref = (value: unknown) => typeof value === 'string' && value.length <= 500 && ((value.startsWith('/') && !value.startsWith('//')) || /^https:\/\/[^\s<>"']+$/i.test(value));
 const safeText = (v: unknown, fallback: string, max: number) => typeof v === 'string' && v.trim() && v.trim().length <= max ? v.trim() : fallback;
 export function normalizeLanding(value: unknown): LandingContent {

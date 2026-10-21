@@ -6,7 +6,8 @@ import { callGas } from "@/lib/gas";
 export const maxDuration = 60;
 
 export async function GET(req: NextRequest) {
-  if (!(getOfficeRequest(req)?.role === "admin")) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  const actor = getOfficeRequest(req);
+  if (actor?.role !== "admin") return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   const eventId = req.nextUrl.searchParams.get("eventId");
   if (!eventId) return NextResponse.json({ ok: false, error: "eventId wajib diisi." }, { status: 400 });
   if (!process.env.GAS_ENDPOINT && process.env.NEXT_PUBLIC_DEMO_MODE === "1") {
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, data: demo, demo: true });
   }
   try {
-    const data = await callGas("getAttendance", { eventId }, true);
+    const data = await callGas("getAttendance", { eventId, actor }, true);
     return NextResponse.json({ ok: true, data });
   } catch (error) {
     return NextResponse.json({ ok: false, error: error instanceof Error ? error.message : "Gagal memuat peserta." }, { status: 500 });
