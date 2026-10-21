@@ -544,7 +544,7 @@ function oCheckActor_(actor,role){
   if(!actor || !actor.username || !actor.name || ['admin','pejabat'].indexOf(actor.role)===-1 || !actor.sessionVersion)throw new Error('Identitas petugas tidak sah');
   if(role && actor.role!==role)throw new Error('Role tidak diizinkan');
   var u=oRows_(O_NAMES.USERS).find(function(x){return x.username.toLowerCase()===String(actor.username).toLowerCase()});
-  if(!u || u.active!=='true' || u.role!==actor.role || u.sessionVersion!==actor.sessionVersion)throw new Error('Akun nonaktif atau sesi tidak berlaku lagi; silakan login ulang.');
+  if(!u || !sosproUserActive_(u.active) || u.role!==actor.role || u.sessionVersion!==actor.sessionVersion)throw new Error('Akun nonaktif atau sesi tidak berlaku lagi; silakan login ulang.');
 }
 function oLog_(code,actor,status,note){oAppend_(O_NAMES.LOG,{code:code,actor:actor,status:status,note:note,time:oTime_()})}
 function oUpload_(value,filename,mime,maxBytes){
@@ -659,6 +659,8 @@ function sosproUserPasswordHash_(password,salt){
   }
   return str;
 }
+/** Google Sheets getDisplayValues() can return TRUE/FALSE in uppercase for booleans. */
+function sosproUserActive_(value){return String(value===undefined||value===null?'':value).trim().toLowerCase()==='true';}
 function sosproValidUsername_(name){return /^[a-z][a-z0-9._-]{3,39}$/.test(String(name||''));}
 function sosproValidPassword_(value){return typeof value==='string' && value.length>=12 && value.length<=128 && /[A-Za-z]/.test(value) && /[0-9]/.test(value);}
 function sosproCreateUser_(username,password,displayName,role){
@@ -675,7 +677,7 @@ function sosproCreateUser_(username,password,displayName,role){
 function setupSosproUsers_(){
   var p=PropertiesService.getScriptProperties();
   if(!p.getProperty('USER_PEPPER'))p.setProperty('USER_PEPPER',createSecret_());
-  var admins=oRows_(O_NAMES.USERS).filter(function(u){return u.role==='admin' && u.active==='true'});
+  var admins=oRows_(O_NAMES.USERS).filter(function(u){return u.role==='admin' && sosproUserActive_(u.active)});
   if(admins.length)return 'Admin sudah tersedia; tidak ditimpa';
   var username=p.getProperty('ADMIN_USERNAME'),password=p.getProperty('ADMIN_PASSWORD');
   if(!username||!password)throw new Error('Sebelum setup pertama, isi ADMIN_USERNAME dan ADMIN_PASSWORD pada Script Properties (selain SHEET_ID dan DRIVE_FOLDER_ID).');
@@ -720,7 +722,7 @@ function oAuthenticateOffice_(b){
   var tries=Number(cache.get(key)||'0');
   if(tries>=6)throw new Error('Terlalu banyak percobaan login. Coba lagi dalam 15 menit.');
   var u=oRows_(O_NAMES.USERS).find(function(x){return x.username.toLowerCase()===username});
-  if(!u||u.active!=='true'||!u.salt||!u.passwordHash||sosproUserPasswordHash_(password,u.salt)!==u.passwordHash){
+  if(!u||!sosproUserActive_(u.active)||!u.salt||!u.passwordHash||sosproUserPasswordHash_(password,u.salt)!==u.passwordHash){
     cache.put(key,String(tries+1),900);
     return null;
   }
@@ -729,6 +731,38 @@ function oAuthenticateOffice_(b){
   try{oSheet_(O_NAMES.USERS).getRange(u._row,O_HEADERS.USERS.indexOf('lastLoginAt')+1).setValue(oTime_())}catch(ignore){}
   // Login tidak mengirim hash, salt, atau data rahasia ke frontend.
   return {username:u.username,name:u.displayName,role:u.role,sessionVersion:u.sessionVersion};
+}
+/** Jalankan dari editor Apps Script jika login tetap gagal.
+ * Hanya metadata akun non-rahasia; tidak mencetak password, hash, salt, token, atau pepper.
+ */
+function diagnosaAkunSospro(){
+  var users=oRows_(O_NAMES.USERS);
+  var hasPepper=!!PropertiesService.getScriptProperties().getProperty('USER_PEPPER');
+  Logger.log('Sheet USERS: '+users.length+' akun; kunci hash tersedia: '+hasPepper);
+  users.forEach(function(u){
+    Logger.log('username='+u.username+'; role='+u.role+'; aktif='+sosproUserActive_(u.active)+
+      '; rawActive='+JSON.stringify(u.active)+'; hashTersedia='+!!u.passwordHash+
+      '; saltTersedia='+!!u.salt+'; sesiTersedia='+!!u.sessionVersion);
+  });
+  return {jumlahAkun:users.length,pepperAda:hasPepper};
+}
+/** Uji kredensial langsung di Apps Script, bila website tetap gagal.
+ * Isi TEST_USERNAME dan TEST_PASSWORD sementara di Script Properties, lalu jalankan.
+ * Password percobaan dihapus di akhir. Log tidak pernah mencetak password/hash.
+ */
+function ujiLoginSospro(){
+  var props=PropertiesService.getScriptProperties();
+  var username=String(props.getProperty('TEST_USERNAME')||'').trim().toLowerCase();
+  var password=props.getProperty('TEST_PASSWORD');
+  try{
+    if(!username||!password)throw new Error('Isi TEST_USERNAME dan TEST_PASSWORD di Script Properties sebelum menjalankan ujiLoginSospro.');
+    var found=oAuthenticateOffice_({username:username,password:password});
+    Logger.log('Tes login backend: '+(found?'BERHASIL':'DITOLAK')+' untuk username '+username+'.');
+    return {berhasil:!!found};
+  }finally{
+    props.deleteProperty('TEST_USERNAME');
+    props.deleteProperty('TEST_PASSWORD');
+  }
 }
 /** Penambahan banner baru hanya jika slot tersedia; banner existing tidak dihapus. */
 function setupSosproSlides_(){
